@@ -1,0 +1,22 @@
+services:
+  mongo:
+    image: mongo:7
+    volumes: [mongo:/data/db]
+  redis:
+    image: redis:7
+  backend:
+    build: ./backend
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      REDIS_URL: redis://redis:6379
+      ADMIN_KEY: change-me
+    ports: ["8000:8000"]
+    depends_on: [mongo, redis]
+  frontend:
+    image: node:20
+    working_dir: /app
+    volumes: ["./frontend:/app"]
+    command: sh -c "npm install && npm run dev -- --host"
+    ports: ["5173:5173"]
+volumes:
+  mongo:
